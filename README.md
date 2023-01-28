@@ -1,6 +1,6 @@
 # rs-linkedlist
 
-使用 Rust，按照 [Learn Rust With Entirely Too Many Linked Lists](https://rust-unofficial.github.io/too-many-lists/index.html) 的描述实现链表。
+使用 Rust，按照 [Learn Rust With Entirely Too Many Linked Lists](https://rust-unofficial.github.io/too-many-lists/index.html) 的描述实现链表（实现链表是 Rust 实实在在的痛）。
 
 ## stack_bad
 
