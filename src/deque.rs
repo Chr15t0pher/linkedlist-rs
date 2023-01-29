@@ -148,20 +148,56 @@ impl<T> Iterator for IntoIter<T> {
   }
 }
 
-// pub struct Iter<'a, T>(Option<Ref<'a, Node<T>>>);
+pub struct Iter<'a, T>(Option<Ref<'a, Node<T>>>);
 
-// impl<'a, T> Iterator for Iter<'a, T> {
-//   type Item = Ref<'a, T>;
+impl<T> List<T> {
+  pub fn iter(&self) -> Iter<'_, T> {
+    Iter(self.head.as_ref().map(|node| node.borrow()))
+  }
+}
 
-//   fn next(&mut self) -> Option<Self::Item> {
-//     self.0.take().map(|old_head| {
-//       // self.0 = Some(Ref::map(old_head, |node| &*node.next.unwrap().into_inner()));
-//       // Ref::map(old_head, |node| &node.elem)
-//       self.0 = old_head.next.as_ref().map(|node| node.borrow());
-//       Ref::map(old_head, |node| &node.elem)
-//     })
-//   }
-// }
+impl<'a, T> Iterator for Iter<'a, T> {
+  type Item = Ref<'a, T>;
+
+  // 这种方法有两处错误，一个是 escape from closure，在 self.0 的赋值处，另一处在 Ref::map 处的 move out
+  // fn next(&mut self) -> Option<Self::Item> {
+    // ------------
+    //           | `self` is declared here, outside of the closure body
+    // self.0.take().map(|old_head| {
+      // self.0 = old_head.next.as_ref().map(|new_head| new_head.borrow());
+      // |        -------- borrow is only valid in the closure body
+      // |
+      // reference to `old_head` escapes the closure body here, old_head 活的不够久，从 new_head 中 borrow 出来的 Ref 只允许和 old_head 活的一样久
+      // Ref::map(old_head, |node| &node.elem) // old_head.next.as_ref() 和 Ref::map(old_head, 两处都使用了 old_head 并对其 map，相当于对其做了一次分割, old_head 在此处活的不够久
+
+
+      // self.0 = Some(Ref::map(old_head, |node| &*node.next.unwrap().into_inner()));
+    // })
+  // }
+
+  // 因为上述问题，所以考虑能不能对 old_head map 一次，分割出它里面的两个 filed
+  // fn next(&mut self) -> Option<Self::Item> {
+  //   self.0.take().map(|old_head| {
+  //     let (new_head, elem) = Ref::map_split(old_head, |inner_old_head| (&inner_old_head.next, &inner_old_head.elem));
+  //     self.0 = new_head.as_ref().map(|new_head_inner| new_head_inner.borrow());
+  //     elem
+  //   })
+  // }
+
+  // fn next(&mut self) -> Option<Self::Item> {
+  //   self.0.take().map(|old_head| {
+  //     let (new_head, elem) = Ref::map_split(old_head, |inner_old_head| (&inner_old_head.next, &inner_old_head.elem));
+  //     self.0 = if new_head.is_some() {
+  //       Some(Ref::map(new_head, |inner| {
+  //         &(*inner.as_ref().unwrap()).into_inner()
+  //       }))
+  //     } else {
+  //       None
+  //     };
+  //     elem
+  //   })
+  // }
+}
 
 #[cfg(test)]
 mod tests {

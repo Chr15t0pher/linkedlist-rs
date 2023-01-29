@@ -18,7 +18,7 @@
   }
   ```
 
-- 避免分配*junk tail*。
+- 避免分配 junk tail。
 
 ## stack_ok
 
@@ -27,7 +27,7 @@
 ## persistent_stack
 
 - 更具有实际应用价值的节点的共享 ownership 下的栈。
-- 无 ownership 和内部可变性的 Rc 无法实现 Iter 和 IterMut。
+- 无 ownership 和内部可变性的 Rc 无法在 Iter 和 IterMut 很方便地解出 &T 和 &mut T，当然如果 T 类型实现了 Clone trait，事情就没那么复杂了。
 
 ## deque
 
