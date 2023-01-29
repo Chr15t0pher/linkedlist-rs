@@ -156,8 +156,8 @@ impl<T> List<T> {
   }
 }
 
-impl<'a, T> Iterator for Iter<'a, T> {
-  type Item = Ref<'a, T>;
+// impl<'a, T> Iterator for Iter<'a, T> {
+//   type Item = Ref<'a, T>;
 
   // 这种方法有两处错误，一个是 escape from closure，在 self.0 的赋值处，另一处在 Ref::map 处的 move out
   // fn next(&mut self) -> Option<Self::Item> {
@@ -197,7 +197,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
   //     elem
   //   })
   // }
-}
+// }
 
 #[cfg(test)]
 mod tests {
