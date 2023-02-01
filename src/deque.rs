@@ -169,9 +169,6 @@ impl<T> List<T> {
       // |
       // reference to `old_head` escapes the closure body here, old_head 活的不够久，从 new_head 中 borrow 出来的 Ref 只允许和 old_head 活的一样久
       // Ref::map(old_head, |node| &node.elem) // old_head.next.as_ref() 和 Ref::map(old_head, 两处都使用了 old_head 并对其 map，相当于对其做了一次分割, old_head 在此处活的不够久
-
-
-      // self.0 = Some(Ref::map(old_head, |node| &*node.next.unwrap().into_inner()));
     // })
   // }
 

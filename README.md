@@ -35,7 +35,7 @@
 
 不怎么 ok 的双端队列
 
-- 引入了内部可变性，链表的结构类似于 Rc<RefCell< T>> 类型。从它中解出带 ownership 的 T 类型的过程，像答辩。
+- 引入了内部可变性，链表的结构类似于 Rc<RefCell< T>> 类型。从它中解出带 ownership 的类型 T 数据的过程，很冗长。
 - 在实现 Iter<'a, T> 的过程中，受 Ref<'a, T> 智能指针的 lifetime 'a 约束，无法像下面这种方式返回一个 &T 类型，此时 &T 的生命周期不能比Ref<'a, T> 更长，所以设计上需要一点折中，iter 函数不能直接返回 &T，而是直接返回 Ref<'a, T>。
 
   ```rust
@@ -44,7 +44,7 @@
 
 ### unsafe_deque_ok
 
-- *mut 不同于 Box，它是 nullable 的，意味着它无法受益于空指针优化 Option< Box< T>>，可以使用 null 来代替 None，可以通过 std::ptr::null_mut 函数获取一个 null，当然，还可以用 0 as *mut _。
+- *mut 不同于 Box，它是 nullable 的，意味着它无法受益于空指针优化 Option< Box< T>>，换句话说，Option 对裸指针不是很友好，可以使用 null 来代替 None，可以通过 std::ptr::null_mut 函数获取一个 null，当然，还可以用 0 as *mut _。
 - 使用 cargo miri test 来检查常见的 UB。包括：
   
   - 内存越界检查和内存释放后使用(use-after-free)。

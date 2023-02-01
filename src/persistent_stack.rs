@@ -98,6 +98,19 @@ impl<T> List<T> {
   }
 }
 
+// Rc 无内部可变性
+// pub struct IterMut<'a, T> {
+//   next: Option<&'a mut Node<T>>
+// }
+
+// impl<'a, T> Iterator for IterMut<'a, T> {
+//   type Item = &'a mut T;
+
+//   fn next(&mut self) -> Option<Self::Item> {
+
+//   }
+// }
+
 #[cfg(test)]
 mod tests {
   use super::*;
